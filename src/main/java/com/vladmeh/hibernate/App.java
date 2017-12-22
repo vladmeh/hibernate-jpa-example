@@ -1,10 +1,8 @@
 package com.vladmeh.hibernate;
 
 import com.vladmeh.hibernate.Entity.Category;
-import com.vladmeh.hibernate.Entity.Product;
 import org.hibernate.Session;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +12,25 @@ import java.util.Set;
  */
 public class App {
     public static void main(String[] args) {
+
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        List result = session.createQuery("from Category").list();
+
+        for (Category category: (List<Category>) result){
+            String parent = (category.getParentCategory() != null)?category.getParentCategory().getName():null;
+            System.out.println("Category: " + category.getName() + " -> parent category: " + parent);
+        }
+
+        session.getTransaction().commit();
+        session.close();
+
+        HibernateUtil.shutdown();
+    }
+
+
+    public static void createCategory(){
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
@@ -43,7 +60,6 @@ public class App {
 
         session.getTransaction().commit();
         session.close();
-
 
         HibernateUtil.shutdown();
     }
